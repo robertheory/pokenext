@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { toCapital } from '../utils/formatting';
 
@@ -61,7 +62,7 @@ export default function Home({ results }: IPokeApiResponse) {
               className='w-100 text-center text-3xl font-thin p-4 border-b-2 border-b-stone-300
             bg-slate-500 hover:bg-slate-600 active:bg-slate-700 focus:outline-none focus:ring focus:ring-slate-300'
             >
-              <h1>{toCapital(p.name)}</h1>
+              <Link href={`/pokemon/${p.name}`}>{toCapital(p.name)}</Link>
             </li>
           ))}
         </ul>
