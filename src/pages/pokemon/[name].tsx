@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import axios from 'axios';
-import { GetServerSideProps } from 'next';
+import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+import { FaArrowLeft } from 'react-icons/fa';
+import names from '../../../public/names.json';
 import { IPokemon } from '../../DTO/IPokemon';
 import { toCapital } from '../../utils/formatting';
-import { FaArrowLeft } from 'react-icons/fa';
 
 const Pokemon = (pokemon: IPokemon) => {
   return (
@@ -97,8 +98,17 @@ const Pokemon = (pokemon: IPokemon) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { name } = ctx.query;
+export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = names.map((n) => ({ params: { name: n } })).slice(0, 9);
+
+  return {
+    paths,
+    fallback: 'blocking',
+  };
+};
+
+export const getStaticProps: GetStaticProps = async (ctx) => {
+  const { name } = ctx.params;
 
   const { data } = await axios.get<IPokemon>(
     `https://pokeapi.co/api/v2/pokemon/${name}`
