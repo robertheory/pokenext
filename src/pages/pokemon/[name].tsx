@@ -1,12 +1,32 @@
 /* eslint-disable @next/next/no-img-element */
 import { ArrowBackIcon } from '@chakra-ui/icons';
-import { Flex, IconButton, Image, Stack, Text } from '@chakra-ui/react';
+import { Box, Flex, IconButton, Image, Stack, Text } from '@chakra-ui/react';
 import axios from 'axios';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import names from '../../../public/names.json';
 import { IPokemon } from '../../DTO/IPokemon';
+import { Radar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  LineController,
+  LineElement,
+  RadialLinearScale,
+  PointElement,
+  LinearScale,
+  Title,
+} from 'chart.js';
+import { useMemo } from 'react';
+
+ChartJS.register(
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  RadialLinearScale,
+  Title
+);
 
 const colors = {
   normal: '#bfbfbf',
@@ -33,6 +53,31 @@ const colors = {
 
 const Pokemon = (pokemon: IPokemon) => {
   const router = useRouter();
+
+  const chartData = useMemo(() => {
+    const labels = pokemon.stats.map((stat) => stat.stat.name.toUpperCase());
+
+    const data = pokemon.stats.map((stat) => stat.base_stat);
+
+    const datasets = [
+      {
+        label: 'Stats',
+        data,
+        fill: true,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgb(255, 99, 132)',
+        pointBackgroundColor: 'rgb(255, 99, 132)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgb(255, 99, 132)',
+      },
+    ];
+
+    return {
+      labels,
+      datasets,
+    };
+  }, [pokemon.stats]);
 
   return (
     <>
@@ -73,37 +118,68 @@ const Pokemon = (pokemon: IPokemon) => {
           </Text>
         </Stack>
 
-        <Image
-          w='200px'
-          src={pokemon.sprites.front_default}
-          alt={pokemon.name}
-        />
+        <Stack
+          direction='row'
+          w='100%'
+          justify='center'
+          alignItems='flex-start'
+        >
+          <Stack
+            w='fit-content'
+            direction='column'
+            justify='flex-start'
+            align='center'
+          >
+            <Image
+              w='200px'
+              src={pokemon.sprites.front_default}
+              alt={pokemon.name}
+            />
+            <Stack
+              w='50%'
+              direction='column'
+              justify='flex-start'
+              align='center'
+            >
+              <Stack direction='row' w='100%' justify='center'>
+                {pokemon.types.map((type) => (
+                  <Text
+                    key={type.type.name}
+                    bg={colors[type.type.name]}
+                    color='white'
+                    w='fit-content'
+                    p='2'
+                    borderRadius='4px'
+                    textTransform='uppercase'
+                    fontWeight='900'
+                  >
+                    {type.type.name}
+                  </Text>
+                ))}
+              </Stack>
 
-        <Stack w='100%' direction='column' justify='flex-start' align='center'>
-          <Stack direction='row' w='100%' justify='center'>
-            {pokemon.types.map((type) => (
-              <Text
-                key={type.type.name}
-                bg={colors[type.type.name]}
-                color='white'
-                w='fit-content'
-                p='2'
-                borderRadius='4px'
-                textTransform='uppercase'
-                fontWeight='900'
-              >
-                {type.type.name}
+              <Text w='fit-content' borderRadius='4px'>
+                Height: {pokemon.height}
               </Text>
-            ))}
+
+              <Text w='fit-content' borderRadius='4px'>
+                Weight: {pokemon.weight}
+              </Text>
+            </Stack>
           </Stack>
 
-          <Text w='fit-content' borderRadius='4px'>
-            Height: {pokemon.height}
-          </Text>
-
-          <Text w='fit-content' borderRadius='4px'>
-            Weight: {pokemon.weight}
-          </Text>
+          <Box w='300px'>
+            <Radar
+              data={chartData}
+              options={{
+                elements: {
+                  line: {
+                    borderWidth: 3,
+                  },
+                },
+              }}
+            />
+          </Box>
         </Stack>
       </Flex>
     </>
