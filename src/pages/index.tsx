@@ -1,11 +1,5 @@
-import axios from 'axios';
-import { GetServerSideProps } from 'next';
+import { Stack, Text } from '@chakra-ui/react';
 import Head from 'next/head';
-import Link from 'next/link';
-import { useMemo, useState } from 'react';
-import { toCapital } from '../utils/formatting';
-import { FiSearch, FiStar } from 'react-icons/fi';
-import Header from '../components/Header';
 
 export default function Home() {
   return (
@@ -14,7 +8,9 @@ export default function Home() {
         <title>PokéNext</title>
       </Head>
 
-      <Header />
+      <Stack direction='column' w='100%' justify='center' align='center'>
+        <Text fontSize='2rem'> HOME</Text>
+      </Stack>
     </>
   );
 }

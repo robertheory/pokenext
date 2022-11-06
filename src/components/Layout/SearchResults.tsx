@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { toCapital } from '../utils/formatting';
+import { toCapital } from '../../utils/formatting';
 
 const SearchResults = ({ items }: { items: string[] }) => {
   return (
